@@ -3,79 +3,76 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#171817">
-  <meta name="description" content="《苏菲的世界》电影化分支互动阅读游戏">
-  <title>苏菲的世界｜逃出最后一页</title>
+  <meta name="theme-color" content="#14271f">
+  <meta name="description" content="《苏菲的世界：第一封信》可交互阅读游戏">
+  <title>苏菲的世界｜第一封信</title>
   <link rel="preload" href="assets/mailbox-forest-v2.webp" as="image" type="image/webp">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="game" class="game" aria-live="polite">
-    <section id="titleScreen" class="title-screen">
-      <div class="leaf-shadow" aria-hidden="true"></div>
-      <div class="mailbox" aria-hidden="true"><span class="slot"></span><span class="letter">你是谁？</span></div>
-      <p class="eyebrow">一部电影化分支互动叙事</p>
-      <h1>苏菲的世界</h1>
-      <p class="subtitle">逃出最后一页</p>
-      <button id="startBtn" class="primary">拆开信封</button>
-      <button id="continueBtn" class="text-button hidden">回到上次翻开的那一页</button>
-      <button id="branchBtnTitle" class="text-button hidden">查看命运页</button>
-      <p class="hint">鼠标 / 触控选择 · 数字键 1–3 · M 静音</p>
+  <main id="app">
+    <section id="cover" class="cover">
+      <div class="cover-copy">
+        <p class="overline">可交互阅读游戏 · 第一卷</p>
+        <h1>苏菲的世界</h1>
+        <p class="volume">第一封信</p>
+        <p class="deck">一个普通的五月午后。放学、森林、绿色信箱。<br>然后，一张纸问了她一个无法搁回去的问题。</p>
+        <div class="cover-actions">
+          <button id="startBtn" class="primary">从放学路上读起 <span>→</span></button>
+          <button id="resumeBtn" class="quiet hidden">回到夹着书签的那一页</button>
+        </div>
+      </div>
+      <button id="coverLetter" class="cover-letter" aria-label="一封没有邮票的信"><span>苜蓿巷三号<br>苏菲收</span></button>
+      <p class="cover-hint">阅读约 15 分钟 · 你的答案只留在这台设备</p>
     </section>
 
-    <section id="playScreen" class="play-screen hidden">
-      <header class="topbar">
-        <button id="homeBtn" class="icon-button" aria-label="返回封面">←</button>
-        <div class="chapter"><span id="actLabel">第一幕</span><strong id="sceneTitle">信箱</strong></div>
-        <button id="muteBtn" class="icon-button" aria-label="静音">声音 开</button>
+    <section id="reader" class="reader hidden">
+      <header class="reader-bar">
+        <button id="homeBtn" class="icon" aria-label="返回封面">←</button>
+        <div class="chapter-meta"><span id="chapterNo">第一章</span><strong id="chapterTitle">苜蓿巷</strong></div>
+        <div class="progress-track" aria-label="阅读进度"><i id="progressFill"></i></div>
+        <button id="chaptersBtn" class="utility">章节</button>
+        <button id="notesBtn" class="utility">笔记 <b id="noteCount">0</b></button>
+        <button id="typeBtn" class="utility" aria-label="调整字号">字</button>
+        <button id="soundBtn" class="utility" aria-label="开关声音">声</button>
       </header>
 
-      <div id="stage" class="stage scene-mailbox">
-        <div class="paper-grain" aria-hidden="true"></div>
-        <div class="sky" aria-hidden="true"></div>
-        <div class="landmark" aria-hidden="true"></div>
-        <div id="character" class="character sophie" aria-hidden="true"><span class="head"></span><span class="body"></span><span class="prop"></span></div>
-        <div id="authorBox" class="author-box hidden"><span class="author-label">少校写道</span><p id="authorText"></p><i></i><i></i><i></i></div>
-        <div id="countdown" class="countdown hidden" role="timer"><span id="countdownNumber">10</span></div>
-        <div id="toast" class="toast hidden"></div>
-        <div id="sceneCaption" class="scene-caption"></div>
+      <div id="scene" class="scene scene-road">
+        <div class="atmosphere"></div>
+        <div id="sceneLabel" class="scene-label">五月初 · 苜蓿巷</div>
+        <div id="objectStage" class="object-stage" aria-live="polite"></div>
       </div>
 
-      <section class="story-panel">
-        <div class="speaker-row"><span id="speaker">苏菲</span><span id="progress">1 / 9</span></div>
-        <p id="storyText" class="story-text"></p>
-        <div id="lensBar" class="lens-bar hidden" aria-label="哲学镜片">
-          <button data-lens="感官">感官<small>看见什么</small></button>
-          <button data-lens="理性">理性<small>哪里矛盾</small></button>
-          <button data-lens="选择">选择<small>我能做什么</small></button>
+      <article class="page" aria-live="polite">
+        <div class="page-rule"></div>
+        <p id="kicker" class="kicker"></p>
+        <h2 id="beatTitle"></h2>
+        <div id="prose" class="prose"></div>
+        <div id="echo" class="echo hidden"></div>
+        <div id="interaction" class="interaction"></div>
+        <div class="page-foot"><span id="pageMark">01</span><span>《苏菲的世界》互动改编 · 原创转述</span></div>
+      </article>
+    </section>
+
+    <section id="ending" class="ending hidden">
+      <div class="ending-copy">
+        <p class="overline">第一卷 · 读完</p>
+        <h2>镜子的另一边</h2>
+        <p>小船在湖中央慢慢打转。苏菲把湿衣服拧了一遍，朝家的方向走。口袋里的信贴着她的手臂，铜镜里那一下眨眼却怎么也甩不掉。</p>
+        <div id="endingNotes" class="ending-notes"></div>
+        <p class="next-line">哲学课才刚开始。席德是谁，也还没有答案。</p>
+        <div class="ending-actions">
+          <button id="endingNotesBtn" class="primary">翻开我的笔记</button>
+          <button id="restartBtn" class="quiet">从第一封信重读</button>
         </div>
-        <div id="choices" class="choices"></div>
-      </section>
-
-      <aside id="hud" class="hud hidden" aria-label="当前状态">
-        <div class="meter author-meter"><span>少校的目光</span><b id="attentionLabel">游移</b><div id="attentionMarks" class="marks"></div></div>
-        <div class="meter"><span>纸缝</span><b id="clueLabel">0 / 3</b><div id="clueMarks" class="clue-marks"></div></div>
-        <div id="exposureMeter" class="meter hidden"><span>暴露</span><b id="exposureLabel">0 / 3</b></div>
-      </aside>
-    </section>
-
-    <section id="endingScreen" class="ending-screen hidden">
-      <div id="endingArt" class="ending-art"></div>
-      <p class="eyebrow">你的命运页</p>
-      <h2 id="endingTitle"></h2>
-      <p id="endingText"></p>
-      <div id="echoes" class="echoes"></div>
-      <div class="ending-actions">
-        <button id="branchBtn" class="primary">摊开命运页</button>
-        <button id="restartBtn" class="text-button">从第一封信重来</button>
       </div>
     </section>
 
-    <dialog id="branchDialog" class="branch-dialog">
-      <div class="dialog-head"><div><p class="eyebrow">已走过的选择</p><h2>命运页</h2></div><button id="closeBranch" class="icon-button" aria-label="关闭">×</button></div>
-      <div id="branchMap" class="branch-map"></div>
-      <div class="dialog-actions"><button id="restartActBtn" class="secondary">从花园宴会重来</button><button id="restartAllBtn" class="primary">从第一封信重来</button></div>
+    <dialog id="drawer" class="drawer">
+      <header><div><p class="overline" id="drawerKicker">阅读记录</p><h2 id="drawerTitle">私人笔记</h2></div><button id="closeDrawer" class="icon" aria-label="关闭">×</button></header>
+      <div id="drawerBody"></div>
     </dialog>
+    <div id="toast" class="toast hidden" role="status"></div>
   </main>
   <script src="game.js"></script>
 </body>

@@ -1,70 +1,65 @@
 "use strict";
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const scenes=[
- {id:"letter",act:"第一幕",title:"没有寄件人的信",class:"mailbox",speaker:"少校",author:"苏菲会把信藏进口袋。她总会照做。",caption:"绿漆还带着清晨的凉。信封没有邮票。",text:"红字比你的手先一步落在纸上。镜子里，另一个女孩握着一本厚讲义。",choices:[
-  ["照他说的藏好","先让他的目光滑过去",{a:-1,c:1,type:"obey"}],
-  ["当着镜子拆开","让另一边看见这封信",{a:1,h:1,flag:"trace",type:"mislead"}],
-  ["把信封翻到背面","先看他忘了写的地方",{a:0,c:1,type:"observe"}]
- ]},
- {id:"mirror",act:"第一幕",title:"铜镜眨了一次眼",class:"mailbox",speaker:"苏菲",author:"她会把那一眼当成错觉。",caption:"镜面没有动。镜中的女孩先闭上眼。",text:"你只能带走一种看法。它不会替你答题，只会决定你先看见什么。",lens:true,choices:[
-  ["摸一摸冰冷的镜框","相信手指留下的感觉",{a:0,c:1,type:"sense"}],
-  ["找出镜中不对称的地方","相信矛盾不会撒谎",{a:0,c:1,type:"reason"}],
-  ["对她点一下头","先做一件没人写下的事",{a:1,h:1,flag:"trace",type:"choice"}]
- ]},
- {id:"bookshop",act:"第二幕",title:"橱窗里的同名书",class:"street",speaker:"艾伯特",author:"苏菲当然不会停下。那只是一本书。",caption:"书脊上印着你的名字。玻璃里，红字没有倒影。",text:"艾伯特让你吸引少校的目光。他没说该用真话，还是用一场更像真的戏。",lens:true,react:true,choices:[
-  ["推门问这本书的结局","把目光全引到自己身上",{a:2,c:1,type:"rebel"}],
-  ["整理被风吹乱的书签","借顺手动作藏起一页",{a:-1,c:1,type:"mislead"}],
-  ["照他说的继续回家","把反抗留到下一页",{a:-1,al:-1,type:"obey"}]
- ]},
- {id:"mother",act:"第二幕",title:"门口的桌布",class:"street",speaker:"妈妈",author:"她只会说学校里发生了一点怪事。",caption:"妈妈抱着洗好的桌布。她没有让开门。",text:"“苏菲，你最近总在躲什么？”她把桌布换到另一只手。",choices:[
-  ["把没有邮票的信递给她","让她知道危险是真的",{a:1,m:1,flag:"truth",type:"trust"}],
-  ["只说艾伯特在帮我","把计划托给一个人",{a:0,al:1,flag:"trust",type:"trust"}],
-  ["说宴会的事还没准备好","把秘密全留给自己",{a:-1,type:"obey"}]
- ]},
- {id:"alberto",act:"第二幕",title:"帽檐下的沉默",class:"escape",speaker:"艾伯特",author:"老师会把计划讲给她听。每一个字。",caption:"艾伯特看了一眼墙角。那里只有风，打字声却停了。",text:"他把表扣在桌上。“后面的事，我不能说。你肯跟着一个没说出口的句子走吗？”",choices:[
-  ["相信他的沉默","让空白替他守住计划",{a:-1,al:1,flag:"trust",type:"trust"}],
-  ["逼他现在说清路线","宁可暴露也要答案",{a:2,c:1,type:"rebel"}],
-  ["假装讨论宴会座位","把真正的问题夹在名单里",{a:-1,c:1,type:"mislead"}]
- ]},
- {id:"toast",act:"第三幕",title:"长桌上每句话都有署名",class:"garden",speaker:"少校",author:"苏菲将站起来，当众感谢这场宴会。",caption:"杯沿越过红字。苹果树下，宾客同时安静。",text:"少校把下一句留给你。他在等一个熟悉的动作。",lens:true,react:true,choices:[
-  ["照着念完","让他的笔先松一口气",{a:-1,al:-1,type:"obey"}],
-  ["故意念错一个名字","让红字追错目标",{a:1,c:1,type:"mislead"}],
-  ["把感谢说给妈妈","让她站到这句话里面",{a:1,m:1,flag:"truth",type:"trust"}],
-  ["放下杯子，不开口","把未说的话交给艾伯特",{a:2,al:1,flag:"trust",type:"rebel"}]
- ]},
- {id:"page",act:"第三幕",title:"桌布下的一页",class:"garden",speaker:"苏菲",author:"那只是一张弄脏的纸。苏菲不会碰它。",caption:"妈妈的手压住桌布。下面露出半个铅笔问号。",text:"少校的字框正罩住宾客。纸页只够一个人先看见。",lens:true,choices:[
-  ["请妈妈收走桌布","把错误送给正确的人",{a:-1,c:1,need:"truth",type:"mislead"}],
-  ["当众抽出那一页","拿到证据，也让他看清你",{a:2,c:1,type:"rebel"}],
-  ["用杯底压住页角","留到撞响之后",{a:-1,c:1,type:"mislead"}]
- ]},
- {id:"crash",act:"第三幕",title:"白色宾士撞向苹果树",class:"crash",speaker:"艾伯特",author:"汽车会撞上树。所有人都会看过去。苏菲会留在原地。",caption:"车头擦过长桌。青苹果砸在引擎盖上。",text:"十秒。树篱后面裂开一道没有印字的白。",timed:true,react:true,choices:[
-  ["追着车跑，抢走他的目光","给艾伯特留出树篱",{a:2,c:1,type:"rebel"}],
-  ["拉住妈妈，再转身离开","用一次坦白换她放手",{a:-1,need:"truth",type:"trust"}],
-  ["跟上艾伯特的帽檐","走进他没说出口的路线",{a:0,needAl:1,type:"trust"}]
- ]},
- {id:"hedge",act:"第三幕",title:"树篱后的空白",class:"escape",speaker:"苏菲",author:"苏菲回到了长桌。她从未离开。",caption:"枝条刮过手背。湖面、木屋、地窖门连成一条窄线。",text:"红字已经贴到身后。你还可以在合页闭上前，决定把最后的痕迹留给谁。",choices:[
-  ["在铜镜边刻一个问号","让席德知道有人来过",{a:1,h:1,flag:"trace",type:"mislead"}],
-  ["握住艾伯特伸来的手","两个人一起跨出边框",{a:0,al:1,flag:"trust",type:"trust"}],
-  ["把信封塞进地窖门缝","留下第一道问题",{a:0,c:1,type:"observe"}]
- ]}
+
+const $=s=>document.querySelector(s);
+const chapters=[
+  {n:"第一章",title:"苜蓿巷"},{n:"第二章",title:"你是谁？"},{n:"第三章",title:"世界从何而来？"},
+  {n:"第四章",title:"树篱里的课"},{n:"第五章",title:"积木实验"},{n:"第六章",title:"跟着汉密士"},{n:"第七章",title:"少校的小木屋"}
 ];
-let state,idx=0,timer=null,audioOn=true;
-const initial=()=>({attention:1,exposure:0,clues:0,mother:0,alberto:0,hilde:0,lens:"感官",flags:{truth:false,trust:false,trace:false},history:[],seenEndings:JSON.parse(localStorage.getItem("sufei_endings")||"[]")});
-function save(){localStorage.setItem("sufei_save",JSON.stringify({state,idx}))}function load(){try{return JSON.parse(localStorage.getItem("sufei_save"))}catch{return null}}
-function start(fromSave=false){const s=fromSave&&load();state=s?.state||initial();idx=s?.idx||0;$("#titleScreen").classList.add("hidden");$("#endingScreen").classList.add("hidden");$("#playScreen").classList.remove("hidden");render()}
-function tone(freq=260,d=.05){if(!audioOn)return;try{const c=tone.ctx||(tone.ctx=new AudioContext),o=c.createOscillator(),g=c.createGain();o.frequency.value=freq;o.type="triangle";g.gain.setValueAtTime(.035,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g).connect(c.destination);o.start();o.stop(c.currentTime+d)}catch{}}
-function render(){clearInterval(timer);const s=scenes[idx],stage=$("#stage");stage.className=`stage scene-${s.class} attention-${state.attention}`;$("#actLabel").textContent=s.act;$("#sceneTitle").textContent=s.title;$("#speaker").textContent=s.speaker;$("#progress").textContent=`${idx+1} / ${scenes.length}`;$("#storyText").textContent=s.text;$("#sceneCaption").textContent=s.caption;$("#authorText").textContent=counterText(s);$("#authorBox").classList.remove("hidden");$("#hud").classList.toggle("hidden",idx===0);$("#lensBar").classList.toggle("hidden",!s.lens);$$('[data-lens]').forEach(b=>b.classList.toggle("active",b.dataset.lens===state.lens));renderChoices(s);renderHud();if(s.timed)startCountdown();save()}
-function counterText(s){if(!s.react||state.history.length<2)return s.author;const counts={};state.history.forEach(h=>counts[h.type]=(counts[h.type]||0)+1);const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0];if(top==="rebel")return s.author+" 她总爱反抗。把那条路划掉。";if(top==="obey")return s.author+" 她已经学会照做。";if(top==="mislead")return s.author+" 别信她那些顺手的动作。";return s.author}
-function renderChoices(s){const box=$("#choices");box.innerHTML="";s.choices.forEach((c,i)=>{const locked=(state.attention>=3&&c[2].type==="rebel")||(c[2].need&&!state.flags[c[2].need])||(c[2].needAl&&state.alberto<c[2].needAl);const b=document.createElement("button");b.className="choice"+(locked?" locked":"");b.innerHTML=`<b><em>${String(i+1).padStart(2,"0")}</em>${c[0]}</b><small>${locked?lockReason(c[2]):c[1]}</small>`;b.disabled=locked;b.onclick=()=>choose(i);box.appendChild(b)})}
-function lockReason(e){if(state.attention>=3&&e.type==="rebel")return"红字已经封住这句话";if(e.need==="truth")return"她还没见过那封信";return"他还没把沉默交给你"}
-function choose(i){clearInterval(timer);const s=scenes[idx],c=s.choices[i],e=c[2];tone(e.type==="mislead"?390:e.type==="rebel"?150:260,.09);let msg=c[1];const before=state.attention;if(e.a)state.attention=Math.max(0,Math.min(3,state.attention+e.a));if(e.c)state.clues=Math.min(3,state.clues+e.c);if(e.m)state.mother=Math.min(1,state.mother+e.m);if(e.al)state.alberto=Math.max(0,Math.min(2,state.alberto+e.al));if(e.h)state.hilde=1;if(e.flag)state.flags[e.flag]=true;if(before>=2&&e.type==="rebel"){state.exposure++;msg="红笔压住你的动作。他看见了。"}if(before===3&&e.type==="obey")state.attention=2;if(e.need==="truth"&&state.flags.truth){state.attention=Math.max(0,state.attention-1);msg="妈妈收走桌布。红字追着空掉的位置。"}state.history.push({scene:s.id,title:s.title,choice:c[0],type:e.type});toast(msg);if(state.exposure>=3){setTimeout(()=>ending("written"),650);return}setTimeout(()=>{idx++;if(idx>=scenes.length)resolveEnding();else render()},700)}
-function resolveEnding(){if(state.clues<2)return ending("late");if(state.clues>=3&&state.hilde&&Object.values(state.flags).filter(Boolean).length>=2)return ending("echo");ending("escape")}
-const endings={written:{title:"被写回原句",text:"你重新站在苹果树下，手里的杯子还没放下。少校把最后一次反抗抄得一字不差。下一次，别在红线贴满页边时硬顶。"},late:{title:"迟了一页",text:"你穿过树篱，又从长桌另一端走了回来。地窖门就在纸后，可你没有留下足够的纸缝。"},escape:{title:"越界而行",text:"汽水瓶从你的手里穿过去。少校的打字声停了，现实也没有看见你。海湾边，那根船绳晃了一下。"},echo:{title:"空白处有回声",text:"席德翻到页边。那里多了一个她父亲没写过的问号。扳钳轻响，船绳从木桩上慢慢松开。"}};
-function ending(key){clearInterval(timer);const e=endings[key];$("#playScreen").classList.add("hidden");$("#endingScreen").classList.remove("hidden");$("#endingTitle").textContent=e.title;$("#endingText").textContent=e.text;const echoes=[];if(state.flags.truth)echoes.push("妈妈把门留了一条缝。她记得你把那封信交给她。");if(state.flags.trust)echoes.push("艾伯特没有解释。他伸出的手和你记得的一样稳。");if(state.flags.trace)echoes.push("席德的铅笔停在问号旁。她看见了你的痕迹。");$("#echoes").innerHTML=echoes.map(x=>`<div class="echo">${x}</div>`).join("");state.seenEndings=[...new Set([...(state.seenEndings||[]),key])];localStorage.setItem("sufei_endings",JSON.stringify(state.seenEndings));localStorage.removeItem("sufei_save");tone(key==="echo"?520:190,.6)}
-function renderHud(){const names=["游移","贴近","警戒","锁笔"];$("#attentionLabel").textContent=names[state.attention];$("#attentionMarks").innerHTML=[1,2,3].map(n=>`<i class="${n<=state.attention?'on':''}"></i>`).join("");$("#clueLabel").textContent=`${state.clues} / 3`;$("#clueMarks").innerHTML=[1,2,3].map(n=>`<i class="${n<=state.clues?'on':''}"></i>`).join("");$("#exposureMeter").classList.toggle("hidden",!state.exposure);$("#exposureLabel").textContent=`${state.exposure} / 3`}
-function toast(t){const el=$("#toast");el.textContent=t;el.classList.remove("hidden");void el.offsetWidth;setTimeout(()=>el.classList.add("hidden"),720)}
-function startCountdown(){let n=10;$("#countdown").classList.remove("hidden");$("#countdownNumber").textContent=n;timer=setInterval(()=>{n--;$("#countdownNumber").textContent=n;tone(140,.025);if(n<=0){clearInterval(timer);$("#countdown").classList.add("hidden");const safe=scenes[idx].choices.findIndex(c=>c[2].type==="trust"&&!((c[2].need&&!state.flags[c[2].need])||(c[2].needAl&&state.alberto<c[2].needAl)));choose(safe>=0?safe:0)}},1000)}
-function openBranch(){const map=$("#branchMap"),hist=state?.history||[];map.innerHTML=scenes.map((s,i)=>{const h=hist.find(x=>x.scene===s.id);return `<div class="branch-node ${h?'':'unknown'}"><b>${s.act}</b><p>${h?`${s.title}：${h.choice}`:'这一页仍是空白'}</p></div>`}).join("");$("#branchDialog").showModal()}
-function reset(all=true){$("#branchDialog").close();const endingsSeen=state?.seenEndings||[];state=initial();state.seenEndings=endingsSeen;idx=all?0:5;save();start(true)}
-$("#startBtn").onclick=()=>start(false);$("#continueBtn").onclick=()=>start(true);$("#branchBtnTitle").onclick=openBranch;$("#branchBtn").onclick=openBranch;$("#closeBranch").onclick=()=>$("#branchDialog").close();$("#restartBtn").onclick=()=>reset(true);$("#restartAllBtn").onclick=()=>reset(true);$("#restartActBtn").onclick=()=>reset(false);$("#homeBtn").onclick=()=>location.reload();$("#muteBtn").onclick=()=>{audioOn=!audioOn;$("#muteBtn").textContent=audioOn?"声音 开":"声音 关"};$$('[data-lens]').forEach(b=>b.onclick=()=>{state.lens=b.dataset.lens;$$('[data-lens]').forEach(x=>x.classList.toggle("active",x===b));tone(410,.05);toast(`${state.lens}镜片：${b.querySelector('small').textContent}`)});document.addEventListener("keydown",e=>{if(e.key>="1"&&e.key<="4"){const b=$$(".choice:not(.locked)")[Number(e.key)-1];b?.click()}if(e.key.toLowerCase()==="m")$("#muteBtn").click()});
-const saved=load();$("#continueBtn").classList.toggle("hidden",!saved);$("#branchBtnTitle").classList.toggle("hidden",!JSON.parse(localStorage.getItem("sufei_endings")||"[]").length);
+
+const beats=[
+ {c:0,scene:"road",label:"五月初 · 放学路上",k:"苜蓿巷",title:"世界尽头的家",text:["五月初，水仙已经开到果树脚下。苏菲和乔安从学校一路走到超市，谈的是机器人。乔安觉得人的脑袋无非是一部很复杂的电脑。苏菲没有答应。一个人总该比机器多一点什么。","她们在路口分开。乔安走近路回家，苏菲继续往市郊走。苜蓿巷尽头有一个急弯，再过去只有森林。她家的红房子就停在那儿，像整条路最后一个句号。"],type:"next",action:"沿着苜蓿巷走回去"},
+ {c:0,scene:"road",label:"苜蓿巷三号 · 花园门外",k:"日常",title:"绿色信箱",text:["苏菲推开花园门。她照例掀开绿色信箱的盖子，准备把广告和妈妈的信放到厨房桌上。","今天里面只有一只小小的白信封。没有邮票，没有寄件人的名字。正面写着她的地址，还有两个字：苏菲收。"],type:"letter",question:"你是谁？",artifact:"第一封白信",action:"拉出信封，拆开它"},
+ {c:1,scene:"mail",label:"红房子 · 厨房",k:"第一封信",title:"三个字和一个问号",text:["纸片上只有一个问题。没有问候，也没有说明。苏菲把信封翻了两遍，仍找不到是谁把它送来的。","雪儿从门边钻进屋。苏菲给猫添了食物，自己却一直捏着那张纸。她当然知道自己的名字。可名字回答的，真是信上的问题吗？"],type:"next",action:"带着问题去照镜子"},
+ {c:1,scene:"mirror",label:"红房子 · 浴室",k:"镜前",title:"镜中的女孩",text:["苏菲站到镜前，说了另一个名字。镜中的女孩照样动嘴，却没有因此变成另一个人。她又飞快抬手，想让影像来不及跟上。镜子没有失误。","她盯着那张熟悉的脸。名字不是她选的，长相也不是。可若把这些都拿走，还剩下什么能叫作“我”？"],type:"observe",artifact:"镜前的三个细节",action:"在镜中找出三处细节"},
+ {c:1,scene:"mirror",label:"镜前 · 第一条笔记",k:"问题一",title:"你先想到了什么？",text:["问题没有标准答案。苏菲需要一个可以暂时握住的念头，哪怕过一会儿就会推翻它。"],type:"reflect",key:"identity",question:"我最像什么？",choices:["是别人叫我的那个名字","是这副没有由我选择的身体","是正在提出问题的这个意识"]},
+ {c:1,scene:"road",label:"花园 · 石子路",k:"生与死",title:"活着这件事",text:["苏菲走到花园。雪儿轻巧地穿过石子路，对自己活着这件事毫不惊讶。苏菲却忽然想起不久前去世的祖母。","一想到生命有一天会结束，眼前的五月反而更清楚了：嫩叶、猫的尾巴、脚下的碎石。她把信纸折好。那个问题已经钻进日常里，赶不出去了。"],echo:"identity",type:"next",action:"再看一眼信箱"},
+ {c:2,scene:"mail",label:"花园门外 · 同一个下午",k:"第二封信",title:"信箱又满了",text:["苏菲离开信箱时，里面明明已经空了。她再回来，另一只白信封正躺在原来的位置。纸张、笔迹、大小，全都一样。","这一次的问题更短，也更大。"],type:"letter",question:"世界从何而来？",artifact:"第二封白信",action:"拆开第二封信"},
+ {c:2,scene:"hedge",label:"花园 · 树篱密洞",k:"藏身处",title:"从叶缝看世界",text:["花园深处有一排多年没有修剪的树篱。苏菲知道枝叶间藏着一个洞。她钻进去，坐在虬结的树根上。外面的人找不到她，她却能从硬币大的叶缝看见整座花园。","世界若有一个开始，开始之前又是什么？若它由某样东西造成，那样东西又从哪里来？问题每往后退一步，前面就多出一块空地。"],type:"reflect",key:"origin",question:"先留一个暂时的答案",choices:["也许世界一直都在","也许它由某种更早的存在创造","我现在不知道，但这个问题值得留下"]},
+ {c:2,scene:"mail",label:"苜蓿巷三号 · 信箱",k:"错投",title:"写给席德的明信片",text:["邮差来过后，信箱里多了一张有邮票和邮戳的风景明信片。地址仍是苏菲家，收件人却叫席德。寄信人是一位在外地的父亲。","他祝女儿十五岁生日快乐，还说把卡片转交给苏菲最方便。苏菲不认识席德。她的生日，也快到了。"],type:"postcard",artifact:"写给席德的明信片",action:"把明信片翻到背面"},
+ {c:3,scene:"road",label:"第二天 · 放学路上",k:"秘密",title:"乔安走了近路",text:["第二天的课变得很难听进去。老师讲的都是平常事情，信上的两个问题却在课桌底下越长越大。","乔安约她打牌，又改口说打羽毛球。苏菲都摇了头。她说自己有一个秘密。乔安看了她一会儿，转身走上那条只有赶时间才走的近路。苏菲留在原地，第一次觉得秘密也会占地方。"],echo:"identity",type:"next",action:"回家看看今天的信箱"},
+ {c:3,scene:"lesson",label:"树篱密洞 · 第一课",k:"棕色大信封",title:"哲学课程",text:["信箱里有一个棕色大信封，背面提醒她小心轻放。苏菲抱着它跑进密洞。里面是几页打字纸。匿名老师没有先给答案，只说世上有些问题与每个人有关。","饿的人需要食物，冷的人需要温暖，孤单的人需要陪伴。等这些都有了，人仍会追问：我们是谁，为什么会在这里，又该怎样生活。"],type:"next",artifact:"第一份哲学讲义",action:"翻到讲义下一页"},
+ {c:3,scene:"lesson",label:"树篱密洞 · 第一课",k:"好奇心",title:"礼帽边上的人",text:["老师把宇宙比作魔术师从空礼帽里拉出的一只巨大白兔。人就住在兔子柔软的毛深处。年纪越大，越容易往里面钻，把不寻常的一切当成习惯。","哲学家做的事很简单，也很难：沿着细毛往外爬，重新对世界感到奇怪。苏菲抬头看花园。昨天以前，她也许正住在毛的深处。"],type:"reflect",key:"wonder",question:"哪件平常事最值得重新看一眼？",choices:["一只猫为什么知道怎样做一只猫","五月里枯地为什么会长出新叶","我为什么习惯了自己就在这里"]},
+ {c:3,scene:"hedge",label:"树篱密洞 · 页边",k:"你的三条边注",title:"问题开始互相说话",text:["苏菲把两张白纸和棕色讲义并排放在树根上。它们本来互不相干，现在却像三条线，慢慢指向同一个地方。"],echo:"all",type:"next",action:"把讲义和问题一起收好"},
+ {c:4,scene:"blocks",label:"红房子 · 地板",k:"白色问题信",title:"积木为什么好用？",text:["几天后，白信封里换了一个更具体的问题：积木为什么是世界上最巧妙的玩具？","苏菲倒出一盒旧积木。每一块都很简单，彼此又能扣在一起。房子可以拆掉，块仍然完好；下一次，它们还能成为船、塔或动物。"],type:"blocks",artifact:"积木实验",action:"用三块积木拼出一种形状"},
+ {c:4,scene:"lesson",label:"树篱密洞 · 原子论",k:"德谟克里特斯",title:"不会消失的小块",text:["下一封棕色讲义谈到德谟克里特斯。他猜想万物由极小、坚固、不可再分的颗粒组成。事物改变时，那些颗粒只是分开，再用新的方式组合。","苏菲低头看手里的积木。这个比方当然不是真正的答案，却让两千多年前的猜想落到了掌心。哲学课开始有了固定节奏：白信问，棕信讲，而她必须先自己想。"],type:"next",action:"去信箱边等送信的人"},
+ {c:5,scene:"forest",label:"花园门外 · 守候",k:"送信者",title:"一只狗叼走了答案",text:["苏菲躲在能看见信箱的地方。树影移动了很久，街上没有陌生人。后来，一只大狗从森林方向跑来，嘴里叼着棕色信封。","狗把信放下，没有停留。苏菲认出它叫汉密士。它回头看了一眼，沿着林间小路跑去。"],type:"trail",artifact:"汉密士留下的路线",action:"跟住它，不要走丢"},
+ {c:5,scene:"forest",label:"森林深处 · 湖边",k:"林间道路",title:"红色小木屋",text:["路爬上一座小丘，又从高松之间落下。树干深处闪着一小片湖光。对岸的桦树围着一栋红色小屋，烟囱里还有一线烟。","岸边拴着小船。苏菲知道自己应该回家。她也知道，若现在转身，信件从哪里来仍会留在森林里。"],echo:"wonder",type:"next",action:"把小船推入湖中"},
+ {c:6,scene:"cabin",label:"湖对岸 · 红色木屋",k:"一探究竟",title:"有人刚刚离开",text:["门没有锁。屋里的旧炉子还在响，桌上放着打字机、书、铅笔和一叠纸。厨房里洗过的杯子没有干，地上的锡碗留着食物。","一面墙摆满书。另一面墙的铜框镜下，挂着两幅名字几乎相同的画：柏客来，柏克莱。苏菲听见远处传来狗叫。"],type:"clues",artifact:"小木屋里的证物",action:"在狗回来前查看三件东西"},
+ {c:6,scene:"cabin",label:"少校小木屋 · 铜框镜",k:"镜后",title:"女孩眨了一下眼",text:["苏菲站到铜框镜前，像在家里那样做了个鬼脸。镜中人照着做。下一秒，镜里的女孩同时闭上两只眼睛。","苏菲自己没有眨。她往后退了一步。镜下的柜子上放着一只绿色皮夹，学生证照片里是一个金发女孩。名字写着：席德。"],type:"next",artifact:"铜框镜",action:"听见狗叫，拿起写给苏菲的信"},
+ {c:6,scene:"cabin",label:"森林 · 回家的路",k:"漂走的小船",title:"她留下了证据",text:["苏菲冲出木屋，小船却已经漂到湖中央。她只好从屋后穿过潮湿的林地，鞋袜很快全湿了。口袋里那封写着自己名字的信像一块发热的纸。","她想见哲学老师，也拿走了属于自己的信。可她闯进了别人的屋子，还把船留在湖上。秘密第一次有了重量。"],echo:"all",type:"finish",action:"合上第一卷"}
+];
+
+const defaultState=()=>({version:3,index:0,notes:{},artifacts:[],visitedChapter:0,large:false,sound:true});
+let state=load()||defaultState(),activeDone=false,ctx=null;
+
+function load(){try{const s=JSON.parse(localStorage.getItem("sufei_reader_v3"));return s?.version===3?s:null}catch{return null}}
+function save(){localStorage.setItem("sufei_reader_v3",JSON.stringify(state))}
+function tone(f=360,d=.06){if(!state.sound)return;try{ctx=ctx||new AudioContext();const o=ctx.createOscillator(),g=ctx.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.025,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);o.connect(g).connect(ctx.destination);o.start();o.stop(ctx.currentTime+d)}catch{}}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.remove("hidden");setTimeout(()=>el.classList.add("hidden"),1600)}
+function showReader(reset=false){if(reset)state=defaultState();$("#cover").classList.add("hidden");$("#ending").classList.add("hidden");$("#reader").classList.remove("hidden");document.body.classList.toggle("large-type",state.large);render()}
+function paragraphHTML(lines){return lines.map(x=>`<p>${x}</p>`).join("")}
+function addArtifact(name){if(name&&!state.artifacts.includes(name))state.artifacts.push(name)}
+function next(){if(state.index<beats.length-1){state.index++;state.visitedChapter=Math.max(state.visitedChapter,beats[state.index].c);save();render()}else finish()}
+function render(){activeDone=false;const b=beats[state.index],ch=chapters[b.c];$("#chapterNo").textContent=ch.n;$("#chapterTitle").textContent=ch.title;$("#progressFill").style.width=`${((state.index+1)/beats.length)*100}%`;$("#noteCount").textContent=Object.keys(state.notes).length;$("#scene").className=`scene scene-${b.scene}`;$("#sceneLabel").textContent=b.label;$("#kicker").textContent=b.k;$("#beatTitle").textContent=b.title;$("#prose").innerHTML=paragraphHTML(b.text);$("#pageMark").textContent=String(state.index+1).padStart(2,"0");renderEcho(b.echo);renderInteraction(b);save();$(".page").scrollTop=0}
+function renderEcho(key){const el=$("#echo");if(!key){el.classList.add("hidden");return}let t="";if(key==="all"){const vals=Object.values(state.notes);t=vals.length?`你留下的字还夹在前面几页：${vals.map(n=>`“${n.answer}”`).join("，")}。苏菲没有把它们当作答案，只把它们带到了这里。`:"前面的页边还是空的。问题却已经跟了过来。"}else if(state.notes[key]){const n=state.notes[key];t=`你在“${n.question}”旁写过：${n.answer}。苏菲此刻又想起了这句话。`}else{el.classList.add("hidden");return}el.textContent=t;el.classList.remove("hidden")}
+function baseStage(){$("#objectStage").innerHTML=""}
+function completeInteraction(b,msg="这一处已经留在笔记里"){if(activeDone)return;activeDone=true;addArtifact(b.artifact);tone(430,.1);toast(msg);save();renderContinue(b)}
+function renderContinue(b){$("#interaction").innerHTML=`<button class="continue"><b>${b.type==="finish"?b.action:"继续读下去"}</b><span>→</span></button>`;$("#interaction button").onclick=b.type==="finish"?finish:next}
+function renderInteraction(b){baseStage();const box=$("#interaction");box.innerHTML="";
+  if(b.type==="next"||b.type==="finish"){renderContinue(b);return}
+  if(b.type==="letter"){const btn=document.createElement("button");btn.className="letter-object";btn.dataset.question=b.question;btn.innerHTML=`<span>${b.action}</span>`;btn.onclick=()=>{btn.classList.add("open");btn.disabled=true;completeInteraction(b,"信封里只有一个问题")};$("#objectStage").append(btn);box.innerHTML=`<p class="kicker">点击左侧信封</p>`;return}
+  if(b.type==="postcard"){const card=document.createElement("button");card.className="postcard";card.innerHTML=`<span class="front">黎巴嫩寄来的风景</span><span class="back">请苜蓿巷三号的苏菲转交席德。<br><br>十五岁生日快乐。<br>爱你的爸爸</span>`;card.onclick=()=>{card.classList.add("flipped");card.disabled=true;setTimeout(()=>completeInteraction(b,"收件人不是苏菲"),380)};$("#objectStage").append(card);box.innerHTML=`<p class="kicker">${b.action}</p>`;return}
+  if(b.type==="reflect"){box.innerHTML=`<div class="choices">${b.choices.map((x,i)=>`<button class="choice" data-i="${i}"><b>${x}</b><small>把这句话留在页边</small></button>`).join("")}</div>`;box.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{state.notes[b.key]={question:b.question,answer:b.choices[+btn.dataset.i],chapter:chapters[b.c].title};$("#noteCount").textContent=Object.keys(state.notes).length;save();tone(510,.12);toast("铅笔在页边停了一下");renderEcho(b.key);setTimeout(()=>renderContinue(b),220)});return}
+  if(b.type==="observe"){const mirror=document.createElement("div");mirror.className="mirror";mirror.innerHTML=`<button class="spot1" aria-label="眼睛">眼</button><button class="spot2" aria-label="轮廓">形</button><button class="spot3" aria-label="动作">动</button>`;let n=0;mirror.querySelectorAll("button").forEach(x=>x.onclick=()=>{if(x.classList.contains("done"))return;x.classList.add("done");x.disabled=true;n++;tone(300+n*60);x.textContent="✓";if(n===3)completeInteraction(b,"镜中的三处细节被圈了起来")});$("#objectStage").append(mirror);box.innerHTML=`<p class="kicker">${b.action} · 0 / 3</p>`;mirror.querySelectorAll("button").forEach(x=>x.addEventListener("click",()=>{const p=box.querySelector("p");if(p)p.textContent=`${b.action} · ${n} / 3`}));return}
+  if(b.type==="blocks"){const wrap=document.createElement("div");wrap.className="blocks";wrap.innerHTML=["形","变","留"].map((x,i)=>`<button class="block" data-i="${i}">${x}</button>`).join("");let n=0;wrap.querySelectorAll("button").forEach(x=>x.onclick=()=>{x.classList.add("placed");x.disabled=true;n++;tone(220+n*80,.08);if(n===3)completeInteraction(b,"房子拆了，积木还在")});$("#objectStage").append(wrap);box.innerHTML=`<p class="kicker">${b.action}</p>`;return}
+  if(b.type==="trail"){const wrap=document.createElement("div");wrap.className="dog-path";wrap.innerHTML=`<div class="dog">🐕</div><div class="trail"><button>过石桥</button><button>沿松树</button><button>下山坡</button></div>`;let step=0;const buttons=[...wrap.querySelectorAll("button")];buttons.forEach((x,i)=>x.onclick=()=>{if(i!==step){toast("汉密士不在这条路上");tone(150);return}x.classList.add("done");x.disabled=true;step++;tone(330+step*45);if(step===3)completeInteraction(b,"湖光从树干间闪了出来")});$("#objectStage").append(wrap);box.innerHTML=`<p class="kicker">依次确认汉密士经过的地标</p>`;return}
+  if(b.type==="clues"){const wrap=document.createElement("div");wrap.className="cabin-clues";wrap.innerHTML=`<button>打字机<br>纸还是温的</button><button>铜框镜<br>镜面有划痕</button><button>绿色皮夹<br>席德的照片</button>`;let n=0;wrap.querySelectorAll("button").forEach(x=>x.onclick=()=>{if(x.classList.contains("done"))return;x.classList.add("done");x.disabled=true;n++;tone(270+n*55);if(n===3)completeInteraction(b,"三个名字在屋里碰到了一起")});$("#objectStage").append(wrap);box.innerHTML=`<p class="kicker">${b.action} · 0 / 3</p>`;wrap.querySelectorAll("button").forEach(x=>x.addEventListener("click",()=>{const p=box.querySelector("p");if(p)p.textContent=`${b.action} · ${n} / 3`}));return}
+}
+
+function finish(){addArtifact("铜框镜");save();$("#reader").classList.add("hidden");$("#ending").classList.remove("hidden");const notes=Object.values(state.notes);$("#endingNotes").innerHTML=notes.map(n=>`<div class="ending-note"><b>${n.question}</b><br>${n.answer}</div>`).join("")||`<div class="ending-note">页边没有答案，只有三个还在追问的问题。</div>`;tone(520,.6)}
+function openDrawer(kind){const body=$("#drawerBody");if(kind==="notes"){$("#drawerKicker").textContent="阅读记录";$("#drawerTitle").textContent="私人笔记";const notes=Object.values(state.notes);body.innerHTML=(notes.length?notes.map(n=>`<div class="note-card"><small>${n.chapter}</small><b>${n.question}</b><br>${n.answer}</div>`).join(""):"<p>等你第一次留下想法，这里才会出现字。</p>")+`<div class="note-card"><small>尚未解释的物件</small>${state.artifacts.length?state.artifacts.join(" · "):"还没有"}</div>`}else{$("#drawerKicker").textContent="第一卷";$("#drawerTitle").textContent="章节";body.innerHTML=chapters.map((c,i)=>`<button class="chapter-card ${i>state.visitedChapter?'locked':''}" data-c="${i}" ${i>state.visitedChapter?'disabled':''}><small>${c.n}</small><br><b>${c.title}</b></button>`).join("");body.querySelectorAll("button:not(:disabled)").forEach(x=>x.onclick=()=>{const target=beats.findIndex(b=>b.c===+x.dataset.c);state.index=target;save();$("#drawer").close();render()})}$("#drawer").showModal()}
+function reset(){localStorage.removeItem("sufei_reader_v3");state=defaultState();showReader(true)}
+
+$("#startBtn").onclick=()=>showReader(true);$("#resumeBtn").onclick=()=>showReader(false);$("#coverLetter").onclick=()=>{$("#coverLetter").style.transform="rotate(1deg) translateY(12px)";tone(320);toast("信封上没有邮票")};$("#homeBtn").onclick=()=>{$("#reader").classList.add("hidden");$("#cover").classList.remove("hidden");$("#resumeBtn").classList.remove("hidden")};$("#chaptersBtn").onclick=()=>openDrawer("chapters");$("#notesBtn").onclick=()=>openDrawer("notes");$("#endingNotesBtn").onclick=()=>openDrawer("notes");$("#closeDrawer").onclick=()=>$("#drawer").close();$("#restartBtn").onclick=reset;$("#typeBtn").onclick=()=>{state.large=!state.large;document.body.classList.toggle("large-type",state.large);save();toast(state.large?"正文已放大":"正文已恢复")};$("#soundBtn").onclick=()=>{state.sound=!state.sound;save();toast(state.sound?"纸张声音已开启":"声音已关闭")};
+document.addEventListener("keydown",e=>{if($("#reader").classList.contains("hidden"))return;if((e.key==="Enter"||e.key===" ")&&!e.target.closest("button,dialog"))$("#interaction .continue")?.click();if(e.key.toLowerCase()==="n")openDrawer("notes");if(e.key>="1"&&e.key<="3")$("#interaction .choice:nth-child("+e.key+")")?.click()});
+$("#resumeBtn").classList.toggle("hidden",!load());
