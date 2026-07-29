@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#171817">
+  <meta name="description" content="《苏菲的世界》电影化分支互动阅读游戏">
+  <title>苏菲的世界｜逃出最后一页</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="game" class="game" aria-live="polite">
+    <section id="titleScreen" class="title-screen">
+      <div class="leaf-shadow" aria-hidden="true"></div>
+      <div class="mailbox" aria-hidden="true"><span class="slot"></span><span class="letter">你是谁？</span></div>
+      <p class="eyebrow">一部电影化分支互动叙事</p>
+      <h1>苏菲的世界</h1>
+      <p class="subtitle">逃出最后一页</p>
+      <button id="startBtn" class="primary">拆开信封</button>
+      <button id="continueBtn" class="text-button hidden">回到上次翻开的那一页</button>
+      <button id="branchBtnTitle" class="text-button hidden">查看命运页</button>
+      <p class="hint">鼠标 / 触控选择 · 数字键 1–3 · M 静音</p>
+    </section>
+
+    <section id="playScreen" class="play-screen hidden">
+      <header class="topbar">
+        <button id="homeBtn" class="icon-button" aria-label="返回封面">←</button>
+        <div class="chapter"><span id="actLabel">第一幕</span><strong id="sceneTitle">信箱</strong></div>
+        <button id="muteBtn" class="icon-button" aria-label="静音">声音 开</button>
+      </header>
+
+      <div id="stage" class="stage scene-mailbox">
+        <div class="paper-grain" aria-hidden="true"></div>
+        <div class="sky" aria-hidden="true"></div>
+        <div class="landmark" aria-hidden="true"></div>
+        <div id="character" class="character sophie" aria-hidden="true"><span class="head"></span><span class="body"></span><span class="prop"></span></div>
+        <div id="authorBox" class="author-box hidden"><span class="author-label">少校写道</span><p id="authorText"></p><i></i><i></i><i></i></div>
+        <div id="countdown" class="countdown hidden" role="timer"><span id="countdownNumber">10</span></div>
+        <div id="toast" class="toast hidden"></div>
+        <div id="sceneCaption" class="scene-caption"></div>
+      </div>
+
+      <section class="story-panel">
+        <div class="speaker-row"><span id="speaker">苏菲</span><span id="progress">1 / 9</span></div>
+        <p id="storyText" class="story-text"></p>
+        <div id="lensBar" class="lens-bar hidden" aria-label="哲学镜片">
+          <button data-lens="感官">感官<small>看见什么</small></button>
+          <button data-lens="理性">理性<small>哪里矛盾</small></button>
+          <button data-lens="选择">选择<small>我能做什么</small></button>
+        </div>
+        <div id="choices" class="choices"></div>
+      </section>
+
+      <aside id="hud" class="hud hidden" aria-label="当前状态">
+        <div class="meter author-meter"><span>少校的目光</span><b id="attentionLabel">游移</b><div id="attentionMarks" class="marks"></div></div>
+        <div class="meter"><span>纸缝</span><b id="clueLabel">0 / 3</b><div id="clueMarks" class="clue-marks"></div></div>
+        <div id="exposureMeter" class="meter hidden"><span>暴露</span><b id="exposureLabel">0 / 3</b></div>
+      </aside>
+    </section>
+
+    <section id="endingScreen" class="ending-screen hidden">
+      <div id="endingArt" class="ending-art"></div>
+      <p class="eyebrow">你的命运页</p>
+      <h2 id="endingTitle"></h2>
+      <p id="endingText"></p>
+      <div id="echoes" class="echoes"></div>
+      <div class="ending-actions">
+        <button id="branchBtn" class="primary">摊开命运页</button>
+        <button id="restartBtn" class="text-button">从第一封信重来</button>
+      </div>
+    </section>
+
+    <dialog id="branchDialog" class="branch-dialog">
+      <div class="dialog-head"><div><p class="eyebrow">已走过的选择</p><h2>命运页</h2></div><button id="closeBranch" class="icon-button" aria-label="关闭">×</button></div>
+      <div id="branchMap" class="branch-map"></div>
+      <div class="dialog-actions"><button id="restartActBtn" class="secondary">从花园宴会重来</button><button id="restartAllBtn" class="primary">从第一封信重来</button></div>
+    </dialog>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
